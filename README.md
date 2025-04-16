@@ -1,2 +1,3 @@
 # CS32-SPRING23
-CS32 Spring 2023
+UCLA CS32 Spring 2023
+Prof David Smallberg
