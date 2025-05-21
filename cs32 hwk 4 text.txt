@@ -1,0 +1,104 @@
+﻿1.e. This fails test 3 because we added to the vector in the duration of the loop, which means that the end case we established is no longer valid. Thus, the loop would go on infinitely because it cannot terminate.
+
+
+3. This single argument function fails because there is no way of comparing which Coord is larger than another Coord object, since the way the single argument insert function works is that it looks for where the Coord object to be inserted is the smallest. 
+
+
+4.b. Giving the function the string path parameter is important because it keeps track of the parents of the children. If I had to write the function recursively but with one parameter, I’d have to use a container like a stack to keep track of the state of the parents, which would break the constraints of part a.
+
+
+5.a.
+        const int N = some value;
+        bool hasCommunicatedWith[N][N];
+        ...
+        int numIntermediaries[N][N];
+        for (int i = 0; i < N; i++) // O(N)
+        {
+            numIntermediaries[i][i] = -1;  // the concept of intermediary
+                                           // makes no sense in this case
+            for (int j = 0; j < N; j++) // O(N)
+            {
+                if (i == j) //O(1)
+                    continue;
+                numIntermediaries[i][j] = 0;
+                for (int k = 0; k < N; k++) // O(N)
+                {
+                    if (k == i  ||  k == j) //O(1)
+                        continue;
+                    if (hasCommunicatedWith[i][k]  &&  hasCommunicatedWith[k][j]) //O(1)
+                        numIntermediaries[i][j]++;
+                }
+            }
+        }
+// O(N^3) because we ignore the lower terms. There are 3 for loops that go to the maximum size N
+
+
+5.b.
+        const int N = some value;
+        bool hasCommunicatedWith[N][N];
+        ...
+        int numIntermediaries[N][N];
+        for (int i = 0; i < N; i++) //O(N)
+        {
+            numIntermediaries[i][i] = -1;  // the concept of intermediary
+                                           // makes no sense in this case 
+            for (int j = 0; j < i; j++)  // loop limit is now i, not N    //O(N)
+            {
+                numIntermediaries[i][j] = 0;
+                for (int k = 0; k < N; k++) //O(N)
+                {
+                    if (k == i  ||  k == j)
+                        continue;
+                    if (hasCommunicatedWith[i][k]  &&  hasCommunicatedWith[k][j])
+                        numIntermediaries[i][j]++;
+                }
+                numIntermediaries[j][i] = numIntermediaries[i][j];
+            }
+        }
+// O(N^3), because despite the fact that we have moved the limit to i instead of N, there are still  3 for loops that go up to N, therefore N^3
+
+
+6.a.
+Considering seq1.size() and seq2.size() as N
+        void concatReverse(const Sequence& seq1, const Sequence& seq2, Sequence& result)
+        {
+            Sequence res;
+        
+            for (int k = seq1.size() - 1; k >= 0; k--)  // O(N-1)
+            {
+                ItemType v;
+                seq1.get(k, v); //O(N)
+                res.insert(res.size(), v);
+            }
+
+
+            for (int k = seq2.size() - 1; k >= 0; k--) // O(N-1)
+            {
+                ItemType v;
+                seq2.get(k, v); //O(N)
+                res.insert(res.size(), v);
+            }
+
+
+            result.swap(res);
+        }
+//we would get O(2N^2), but since we are dropping coefficients, it would be O(N^2). We visit each node once
+
+
+6.b.
+        void Sequence::concatReverse(const Sequence& seq1, const Sequence& seq2)
+        {
+            Sequence res;
+
+
+            for (Node* p = seq1.m_head->m_prev; p != seq1.m_head; p = p->m_prev) // O(N)
+                res.insertBefore(res.m_head, p->m_value);
+            for (Node* p = seq2.m_head->m_prev; p != seq2.m_head; p = p->m_prev) // O(N)
+                res.insertBefore(res.m_head, p->m_value);
+
+
+              // Swap *this with res
+            swap(res); // this can be implemented with O(N)
+              // Old value of *this (now in res) is destroyed when function returns. Which can be O(N)
+        }
+// the time complexity of this could be O(3N), but we drop the coefficients to make it O(N). This is the same as part a.
